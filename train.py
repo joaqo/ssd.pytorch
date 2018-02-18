@@ -63,7 +63,8 @@ accum_batch_size = 32
 iter_size = accum_batch_size / batch_size
 max_iter = args.iterations
 weight_decay = 0.0005
-stepvalues = (80000, 100000, 120000)
+# stepvalues = (80000, 100000, 120000)
+stepvalues = (400000, 450000, 500000)
 gamma = 0.1
 momentum = 0.9
 
