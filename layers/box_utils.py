@@ -168,6 +168,30 @@ def log_sum_exp(x):
     return torch.log(torch.sum(torch.exp(x-x_max), 1, keepdim=True)) + x_max
 
 
+# def log_sum_exp(x):
+#     """Utility function for computing log_sum_exp while determining
+#     This will be used to determine unaveraged confidence loss across
+#     all examples in a batch.
+#     Args:
+#         x (Variable(tensor)): conf_preds from conf layers
+#     """
+#     x_max = x.data.max()
+#     # difference =
+#
+#     # If this is too low, the log explodes
+#     # from IPython import embed; embed(display_banner=False)
+#     x = torch.clamp(x, min=-3.3444e10, max=3.3444e10)
+#     x_max = np.clip(x_max, -3.3444e10, 3.3444e10)
+#
+#     exponent = torch.exp(x - x_max)
+#     sum_exponent = torch.sum(exponent, 1, keepdim=True)
+#     sum_exponent = torch.clamp(sum_exponent, min=2.7535e-27)
+#     # print(sum_exponent)
+#     log = torch.log(sum_exponent)
+#     # print(log)
+#     return  log + x_max
+
+
 # Original author: Francisco Massa:
 # https://github.com/fmassa/object-detection.torch
 # Ported to PyTorch by Max deGroot (02/01/2017)
