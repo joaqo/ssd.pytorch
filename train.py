@@ -14,6 +14,9 @@ from ssd import build_ssd
 import numpy as np
 import time
 
+import torchvision.utils as vutils
+from tensorboardX import SummaryWriter
+
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
 
@@ -37,6 +40,8 @@ parser.add_argument('--send_images_to_visdom', type=str2bool, default=False, hel
 parser.add_argument('--save_folder', default='weights/', help='Location to save checkpoint models')
 parser.add_argument('--voc_root', default=VOCroot, help='Location of VOC root directory')
 args = parser.parse_args()
+
+WRITER = SummaryWriter()
 
 if args.cuda and torch.cuda.is_available():
     torch.set_default_tensor_type('torch.cuda.FloatTensor')
@@ -210,6 +215,22 @@ def train():
                     win=epoch_lot,
                     update=True
                 )
+
+        # TENSORBOARD
+        if iteration > 5000:
+                WRITER.add_scalar('losses/localization_loss', loss_l.data[0], iteration)
+                WRITER.add_scalar('losses/confidence_loss', loss_c.data[0], iteration)
+                WRITER.add_scalar('losses/total_loss', loss_l.data[0] + loss_c.data[0], iteration)
+
+                learning_rate = float(optimizer.state_dict()['param_groups'][0]['lr'])
+                WRITER.add_scalar('losses/learning_rate', learning_rate, iteration)
+
+        if iteration % 100 == 0:
+                random_batch_index = np.random.randint(images.size(0))
+                plot_image = images.data[random_batch_index]
+                # x = vutils.make_grid(plot_image, normalize=True, scale_each=True)
+                WRITER.add_image('Image', plot_image, iteration)
+
         if iteration % 5000 == 0:
             print('Saving state, iter:', iteration)
             torch.save(ssd_net.state_dict(), 'weights/ssd300_0712_' +
